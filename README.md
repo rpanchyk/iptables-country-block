@@ -54,12 +54,12 @@ Additional scripts allow to setup **fully autonomous** processing.
 
 ### Install for automatic execution by cron
 ```bash
-sudo ./host/iptables/install.sh
+sudo ./install.sh
 ```
 
 ### Uninstall (remove files and cron job)
 ```bash
-sudo ./host/iptables/uninstall.sh
+sudo ./uninstall.sh
 ```
 
 ## Resources
