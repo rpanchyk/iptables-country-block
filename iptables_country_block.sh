@@ -7,18 +7,13 @@ set -eu
 # The script downloads IP list in CIDR format for the specified country
 # and insert each IP to iptables blocking rule.
 
-# For example, block Russia and North Korea from your SSH server:
-# sudo ./iptables_country_block.sh "ru kp" "tcp" "22"
-
 # Here are commands might be helpful along with the script.
 # Save iptables rules:          sudo iptables-save > iptables.backup
 # Restore iptables rules:       sudo iptables-restore < iptables.backup
 # Check where chain is used:    sudo iptables -S | grep COUNTRY_BLOCK
 
 # Settings
-COUNTRIES=$1 # whitespace separated lowercase two-letter ISO country codes
-PROTOCOL=$2 # see possible values in /etc/protocols or use "all" keyword to match everything
-PORT=$3 # destination port
+ARGS=$1
 DOWNLOAD_URL="http://www.ipdeny.com/ipblocks/data/countries"
 ZONE_DIR="/opt/iptables" # directory where zones are saved
 MANUAL_ZONE="/opt/iptables/manual.zone" # custom zone
@@ -30,7 +25,7 @@ echo
 echo "Start iptables country block at" $(eval $DATETIME)
 
 echo -n "Checking requirements ... "
-if [ "$#" -ne 3 ]; then
+if [ "$#" -ne 1 ]; then
     echo "unsatisfied, illegal number of arguments. Exit."
     exit 1
 fi
@@ -81,26 +76,40 @@ echo -n "Injecting chain ... "
 iptables -I INPUT -j COUNTRY_BLOCK
 echo "OK"
 
-for COUNTRY in $COUNTRIES
-do
-    echo "Add blocking rules for '$COUNTRY' - start"
+for GROUP in ${ARGS//|/ }; do
+    echo "Processing '$GROUP' group - start"
 
-    # Local zone file
-    ZONE=$ZONE_DIR/$COUNTRY.zone
+    IFS=':' ITEMS=($GROUP) && unset IFS
+    COUNTRIES="${ITEMS[0]}"
+    PROTOCOL="${ITEMS[1]}"
+    PORT="${ITEMS[2]}"
 
-    # Get fresh zone file
-    wget --no-check-certificate -O $ZONE "$DOWNLOAD_URL/$COUNTRY.zone" 2>&1
+    echo "COUNTRIES: $COUNTRIES"
+    echo "PROTOCOL: $PROTOCOL"
+    echo "PORT: $PORT"
 
-    # Set rules
-    IPS=$(egrep -v "^#|^$" $ZONE)
-    for IP in $IPS
-    do
-        echo -n "Set blocking rule for '$IP' ... "
-        iptables -A COUNTRY_BLOCK --source $IP --protocol $PROTOCOL --dport $PORT -j DROP
-        echo "OK"
+    for COUNTRY in ${COUNTRIES//,/ }; do
+        echo "Add blocking rules for '$COUNTRY' - start"
+
+        # Local zone file
+        ZONE=$ZONE_DIR/$COUNTRY.zone
+
+        # Get fresh zone file
+        wget --no-check-certificate -O $ZONE "$DOWNLOAD_URL/$COUNTRY.zone" 2>&1
+
+        # Set rules
+        IPS=$(egrep -v "^#|^$" $ZONE)
+        for IP in $IPS
+        do
+            echo -n "Set blocking rule for '$IP' ... "
+            iptables -A COUNTRY_BLOCK --source $IP --protocol $PROTOCOL --dport $PORT -j DROP
+            echo "OK"
+        done
+
+        echo "Add blocking rules for '$COUNTRY' - end"
     done
 
-    echo "Add blocking rules for '$COUNTRY' - end"
+    echo "Processing '$GROUP' group - end"
 done
 
 if [ -f $MANUAL_ZONE ]; then

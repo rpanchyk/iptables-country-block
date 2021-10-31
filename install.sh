@@ -4,7 +4,7 @@ set -eu
 # Settings
 INSTALL_DIR=/opt/iptables
 SCRIPT=iptables_country_block.sh
-SCRIPT_ARGS='"ro tr" "udp" "9987"'
+SCRIPT_ARGS='"ru,kp:tcp:21|ru,kp:tcp:80"'
 
 # Env
 DATETIME='echo -n $(date +%Y-%m-%d\ %H:%M:%S)'

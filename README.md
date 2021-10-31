@@ -25,26 +25,30 @@ The following packages (utils) must be installed on local machine:
 - egrep
 
 ## Usage instructions
+Script accepts only one argument but with specific notation by groups.
+
 The execution command looks like:
+```bash
+iptables_country_block.sh "<COUNTRIES>:<PROTOCOL>:<PORT>|<COUNTRIES>:<PROTOCOL>:<PORT>"
 ```
-iptables_country_block.sh "<COUNTRIES>" "<PROTOCOL>" "<PORT>"
-```
-where:
-- `<COUNTRIES>` - is whitespace separated lowercase two-letter ISO country codes.
-- `<PROTOCOL>` - protocol from `/etc/protocols` file or just use `all` keyword to match everything.
-- `<PORT>` - desired port number to block.
+
+Groups are separated by pipes (`|`).
+Items inside the group are separated by colons (`:`) in order:
+- First item - comma separated two-letter ISO country codes in lowercase
+- Second item - protocol, see possible values in `/etc/protocols` or use `all` keyword to match everything
+- Third item - destination port
 
 ## Usage examples
-Let's imagine you have finally to block `Russia` and `North Korea` from your SSH server.
+Let's imagine you have finally to block `Russia` and `North Korea` from your FTP and HTTP(S) servers.
 
-### Case 1: Run with `console` output
+### Option 1: Run with `console` output
 ```bash
-sudo ./iptables_country_block.sh "ru kp" "tcp" "22"
+sudo ./iptables_country_block.sh "ru,kp:tcp:21|ru,kp:tcp:80"
 ```
 
-### Case 2: Run with `log-file` output
+### Option 2: Run with `log-file` output
 ```bash
-sudo sh -c './iptables_country_block.sh "ru kp" "tcp" "22" >> /var/log/country_block.log'
+sudo sh -c './iptables_country_block.sh "ru,kp:tcp:21|ru,kp:tcp:80" >> /var/log/country_block.log'
 ```
 
 Now users (hackers) from those countries should not be able to bother you anymore.
