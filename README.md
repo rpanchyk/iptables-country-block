@@ -33,6 +33,7 @@ iptables_country_block.sh "<COUNTRIES>:<PROTOCOL>:<PORT>|<COUNTRIES>:<PROTOCOL>:
 ```
 
 Groups are separated by pipes (`|`).
+
 Items inside the group are separated by colons (`:`) in order:
 - First item - comma separated two-letter ISO country codes in lowercase
 - Second item - protocol, see possible values in `/etc/protocols` or use `all` keyword to match everything
@@ -67,13 +68,13 @@ sudo ./uninstall.sh
 ```
 
 ## Resources
+Basically this script is inspired by:
+- [Link 1 - clearos.com](https://www.clearos.com/clearfoundation/social/community/how-to-easily-block-whole-country-s-with-iptables)
+- [Link 2 - cyberciti.biz](https://www.cyberciti.biz/faq/block-entier-country-using-iptables/)
+
 There are alot of info about `iptables` configuration, so just a couple of them:
 - [Common Firewall Rules and Commands](https://www.digitalocean.com/community/tutorials/iptables-essentials-common-firewall-rules-and-commands)
 - [How To List and Delete Iptables Firewall Rules](https://www.digitalocean.com/community/tutorials/how-to-list-and-delete-iptables-firewall-rules)
-
-Basically this script is inspired by:
-- [Link 1](https://www.clearos.com/clearfoundation/social/community/how-to-easily-block-whole-country-s-with-iptables)
-- [Link 2](https://www.cyberciti.biz/faq/block-entier-country-using-iptables/)
 
 Also, there are interesting resources for resolving country IP ranges:
 - [geoip.site](https://geoip.site)
