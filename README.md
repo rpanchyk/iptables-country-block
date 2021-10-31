@@ -40,7 +40,7 @@ Items inside the group are separated by colons (`:`) in order:
 - Third item - destination port
 
 ## Usage examples
-Let's imagine you have finally to block `Russia` and `North Korea` from your FTP and HTTP(S) servers.
+Let's imagine you have finally to block `Russia` and `North Korea` from your FTP and HTTP servers.
 
 ### Option 1: Run with `console` output
 ```bash
